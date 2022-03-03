@@ -4,6 +4,8 @@
 import numpy as np 
 from numpy import linalg as la 
 from methods import Method
+from scipy import stats as st
+
 
 def graphAnalyse(g):
 
@@ -75,7 +77,14 @@ print("-------------------------------------------------------------------------
 print("The eigenvalue and eigenvector of M of the first graph approximated with power method are:\n"+
 "Eigenvalue = ", g1_lamda, "\n" +
 "Eigenvector = ", g1_vector,"\n")
-print("The sum of elements of the eigenvector is = ", sum(g1_vector))
+print("The sum of elements of the eigenvector is = ", sum(g1_vector), "\n")
+print("RANK OF WEBSITES: \n")
+
+ranked_1 =len(g1_vector) - st.rankdata(g1_vector) + 1
+ranked_1 = [int(i) for i in ranked_1]
+for i in range(len(g1_vector)):
+    print("Rank ",i + 1," ---> ", ranked_1[i])
+
 
 print("---------------------------------------------------------------------------------------------")
 print("                                     GRAPH 2                                                 ")
@@ -85,6 +94,12 @@ print("The eigenvalue and eigenvector of M of the second graph approximated with
 "Eigenvalue = ", g2_lamda, "\n" +
 "Eigenvector = ", g2_vector, "\n")
 print("The sum of elements of the eigenvector is = ", sum(g2_vector))
+print("RANK OF WEBSITES: \n")
+
+ranked_2 =len(g2_vector) - st.rankdata(g2_vector) + 1
+ranked_2 = [int(i) for i in ranked_2]
+for i in range(len(g2_vector)):
+    print("Rank ",i + 1," ---> ", ranked_2[i])
 
 
 print("---------------------------------------------------------------------------------------------")
@@ -95,6 +110,14 @@ print("The eigenvalue and eigenvector of M of the third graph approximated with 
 "Eigenvalue = ", g3_lamda, "\n" +
 "Eigenvector = ", g3_vector, "\n")
 print("The sum of elements of the eigenvector is = ", sum(g3_vector))
+
+print("RANK OF WEBSITES: \n")
+
+ranked_3 =len(g3_vector) - st.rankdata(g3_vector) + 1
+ranked_3 = [int(i) for i in ranked_3]
+for i in range(len(g3_vector)):
+    print("Rank ",i + 1," ---> ", ranked_3[i])
+
 
 print("---------------------------------------------------------------------------------------------")
 print("                                     THE END                                                 ")
