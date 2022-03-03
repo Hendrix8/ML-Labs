@@ -1,5 +1,6 @@
 import numpy as np 
 from numpy import linalg as la 
+from tem2405_Lab1a import Method
 
 g = open("graph0.txt", "r") 
 

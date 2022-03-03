@@ -3,12 +3,42 @@
 
 import numpy as np 
 from numpy import linalg as la, power, sort 
-import methods
+
+class Method:
+
+    def __init__(self, epsilon, kmax):
+        self.epsilon = epsilon
+        self.kmax = kmax
+
+
+    def powerMethod(self, A):
+
+        x = np.array([np.random.uniform(0,10) for i in range(len(A))]) # creating a random vector of dimensions n and elements in range [0,9)
+        x = x / la.norm(x, 1)  # normalizing x using the 1-norm
+
+        # initializing k and dk 
+        k = 0 
+        dk = 1
+
+        while dk > self.epsilon and k < self.kmax:
+        
+            x_old = x # saving x to calculate dk
+
+            x = A @ x # resetting x
+            x = x / la.norm(x,1)
+
+            dk_old = dk # saving dk for later use
+            dk = la.norm(x - x_old, 1)
+        
+        lamda = (x.T @ A @ x) / (x.T @ x)
+
+        return lamda, dk, dk_old, k
+            
 
 epsilon = 10**(-6) # error 
 kmax = 10000 # maximum iterations 
 
-pM = methods.Method(epsilon, kmax) # power method instance
+pM = Method(epsilon, kmax) # power method instance
 
 # EXAMPLE 
 A = np.array([[1, 2, 3, 4],
