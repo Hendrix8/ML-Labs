@@ -3,6 +3,7 @@
 
 import numpy as np 
 from numpy import linalg as la 
+from scipy import stats as st
 
 class Tool:
 
@@ -47,16 +48,57 @@ class Tool:
                 if j.isdigit():
                     numbInList.append(int(j)) # putting all the numbers in the string 
 
-        x = []
-        y = []
-        for i in range(len(numbInList)): 
-            # grouping them in pairs and adding them in the L list
-            if i%2 == 0:
-                x.append(numbInList[i]) # [1, 1, 1, 2, 2, 3, 4, 4]
-            else:
-                y.append(numbInList[i]) # [2, 3, 4, 3, 4, 1, 1, 3]
-
+        # taking the values of numbInList in pairs but not including the pairs between the spaces
+        L = [[numbInList[i], numbInList[i + 1]] for i in range(len(numbInList) - 1) if i%2 == 0]
         
-        L = list(zip(x, y)) # [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 1), (4, 1), (4, 3)]
-
         return L
+
+    # gets a result from nx.pagerank and
+    # returns a pagerank that has 
+    # {1: 4, 2: 3, ...} like dict where left is the rank and to the right is the node
+    def toNumberRanks(self, pgRank):
+        rankList = list(pgRank.values())
+        
+        rawRank = len(rankList) - st.rankdata(rankList) + 1 
+        rawRank = [int(i) for i in rawRank]
+        indexes = [i + 1 for i in range(len(rawRank))]
+        
+        dictRank = dict(zip(rawRank, indexes))
+        dictRank = dict(sorted(dictRank.items())) # sorting the dictionary so that the ranks are in ascending order
+
+        return dictRank
+
+    def graphAnalyse(self, g):
+
+        # initializing some values
+        d = 0.85
+        epsilon = 10**(-6)
+        kmax = 10000
+
+        # creating the L(j) function
+        def Lj(L, j):
+            cnt = 0
+            for tupl in L:
+                if j == tupl[0]:
+                    cnt += 1
+                else:
+                    pass 
+            return cnt
+
+
+        L = self.txtToGraph(g)  # [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 1), (4, 1), (4, 3)]
+        # L also represents the positions in which the items 1/L(j) go in the form (column, row)
+
+        siteNumber = len(dict(L)) # the number of websites are the length of first items of the L dictionary. (dict deletes duplicates)
+        A = np.zeros((siteNumber,siteNumber)) # creating an empty A to later add the elements
+
+        # creating matrix A 
+        for tupl in L:
+            A[tupl[1] - 1][tupl[0] - 1] = 1 / Lj(L, tupl[0]) # adding in the form (column,row) as L represents
+
+        # creating the matrix M 
+        M = d * A + ( (1 - d) / siteNumber ) * np.ones((siteNumber, siteNumber))
+        
+        lamda, x = self.powerMethod(M, kmax, epsilon)[0:2]
+
+        return lamda, x

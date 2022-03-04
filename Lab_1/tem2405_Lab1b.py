@@ -6,49 +6,14 @@ from numpy import linalg as la
 from tool import Tool
 from scipy import stats as st
 
-
-def graphAnalyse(g):
-
-    # initializing some values
-    d = 0.85
-    epsilon = 10**(-6)
-    kmax = 10000
-    tool = Tool()
-
-    # creating the L(j) function
-    def Lj(L, j):
-        cnt = 0
-        for tupl in L:
-            if j == tupl[0]:
-                cnt += 1
-            else:
-                pass 
-        return cnt
-
-
-    L = tool.txtToGraph(g)  # [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 1), (4, 1), (4, 3)]
-    # L also represents the positions in which the items 1/L(j) go in the form (column, row)
-
-    siteNumber = len(dict(L)) # the number of websites are the length of first items of the L dictionary. (dict deletes duplicates)
-    A = np.zeros((siteNumber,siteNumber)) # creating an empty A to later add the elements
-
-    # creating matrix A 
-    for tupl in L:
-        A[tupl[1] - 1][tupl[0] - 1] = 1 / Lj(L, tupl[0]) # adding in the form (column,row) as L represents
-
-    # creating the matrix M 
-    M = d * A + ( (1 - d) / siteNumber ) * np.ones((siteNumber, siteNumber))
-    
-    lamda, x = tool.powerMethod(M, kmax, epsilon)[0:2]
-    return lamda, x
-
+tool = Tool()
 g1 = open("graph0.txt", "r") 
 g2 = open("graph1.txt", "r")
 g3 = open("graph2.txt", "r")
 
-g1_lamda, g1_vector = graphAnalyse(g1)
-g2_lamda, g2_vector = graphAnalyse(g2)
-g3_lamda, g3_vector = graphAnalyse(g3)
+g1_lamda, g1_vector = tool.graphAnalyse(g1)
+g2_lamda, g2_vector = tool.graphAnalyse(g2)
+g3_lamda, g3_vector = tool.graphAnalyse(g3)
 
 print("\n---------------------------------------------------------------------------------------------")
 print("                                     GRAPH 1                                                 ")
@@ -119,3 +84,8 @@ print("-------------------------------------------------------------------------
 print("                                     THE END                                                 ")
 print("---------------------------------------------------------------------------------------------\n")
 
+print(list(dictRanks_1.values()))
+print(list(dictRanks_2.values()))
+print(list(dictRanks_3.values()))
+print(g1_vector)
+print(g2_vector)
