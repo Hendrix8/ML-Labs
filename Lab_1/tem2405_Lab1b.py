@@ -3,7 +3,7 @@
 
 import numpy as np 
 from numpy import linalg as la 
-from methods import Method
+from tool import Tool
 from scipy import stats as st
 
 
@@ -13,7 +13,7 @@ def graphAnalyse(g):
     d = 0.85
     epsilon = 10**(-6)
     kmax = 10000
-    pM = Method(epsilon, kmax)
+    tool = Tool()
 
     # creating the L(j) function
     def Lj(L, j):
@@ -25,28 +25,8 @@ def graphAnalyse(g):
                 pass 
         return cnt
 
-    # Extracting the information of the file 
-    lines = g.readlines() # example ['1 2\n', '1 3\n', '1 4\n', '2 3\n', '2 4\n', '3 1\n', '4 1\n', '4 3\n']
 
-    numbInList = []
-
-    for i in lines:
-        for j in i.split(): # ['1', '2']... 
-            if j.isdigit():
-                numbInList.append(int(j)) # putting all the numbers in the string 
-
-    x = []
-    y = []
-    for i in range(len(numbInList)): 
-        # grouping them in pairs and adding them in the L list
-        if i%2 == 0:
-            x.append(numbInList[i]) # [1, 1, 1, 2, 2, 3, 4, 4]
-        else:
-            y.append(numbInList[i]) # [2, 3, 4, 3, 4, 1, 1, 3]
-
-    
-    L = list(zip(x, y)) # [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 1), (4, 1), (4, 3)]
-
+    L = tool.txtToGraph(g)  # [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 1), (4, 1), (4, 3)]
     # L also represents the positions in which the items 1/L(j) go in the form (column, row)
 
     siteNumber = len(dict(L)) # the number of websites are the length of first items of the L dictionary. (dict deletes duplicates)
@@ -59,7 +39,7 @@ def graphAnalyse(g):
     # creating the matrix M 
     M = d * A + ( (1 - d) / siteNumber ) * np.ones((siteNumber, siteNumber))
     
-    lamda, x = pM.powerMethod(M)[0:2]
+    lamda, x = tool.powerMethod(M, kmax, epsilon)[0:2]
     return lamda, x
 
 g1 = open("graph0.txt", "r") 
@@ -78,12 +58,18 @@ print("The eigenvalue and eigenvector of M of the first graph approximated with 
 "Eigenvalue = ", g1_lamda, "\n" +
 "Eigenvector = ", g1_vector,"\n")
 print("The sum of elements of the eigenvector is = ", sum(g1_vector), "\n")
-print("RANK OF WEBSITES: \n")
+print("RANK OF NODES: \n")
 
-ranked_1 =len(g1_vector) - st.rankdata(g1_vector) + 1
-ranked_1 = [int(i) for i in ranked_1]
-for i in range(len(g1_vector)):
-    print("Rank ",i + 1," ---> ", ranked_1[i])
+ranks_1 =len(g1_vector) - st.rankdata(g1_vector) + 1 # [1.0, 4.0, 2.0, 3.0]
+ranks_1 = [int(i) for i in ranks_1] # [1, 4, 2, 3]
+
+indexes = [i + 1 for i in range(len(ranks_1))] # creating the indexes for zipping
+
+dictRanks_1 = dict(zip(ranks_1,indexes)) # putting ranks and nodes in a dictionary 
+dictRanks_1 = dict(sorted(dictRanks_1.items())) # ranks on the left and nodes on the right 
+
+for rank, node in dictRanks_1.items():
+    print("Rank ", rank," ---> ", node)
 
 
 print("---------------------------------------------------------------------------------------------")
@@ -94,13 +80,18 @@ print("The eigenvalue and eigenvector of M of the second graph approximated with
 "Eigenvalue = ", g2_lamda, "\n" +
 "Eigenvector = ", g2_vector, "\n")
 print("The sum of elements of the eigenvector is = ", sum(g2_vector))
-print("RANK OF WEBSITES: \n")
+print("RANK OF NODES: \n")
 
-ranked_2 =len(g2_vector) - st.rankdata(g2_vector) + 1
-ranked_2 = [int(i) for i in ranked_2]
-for i in range(len(g2_vector)):
-    print("Rank ",i + 1," ---> ", ranked_2[i])
+ranks_2 =len(g2_vector) - st.rankdata(g2_vector) + 1
+ranks_2 = [int(i) for i in ranks_2] 
 
+indexes = [i + 1 for i in range(len(ranks_2))] 
+
+dictRanks_2 = dict(zip(ranks_2,indexes)) 
+dictRanks_2 = dict(sorted(dictRanks_2.items()))  
+
+for rank, node in dictRanks_2.items():
+    print("Rank ", rank," ---> ", node)
 
 print("---------------------------------------------------------------------------------------------")
 print("                                     GRAPH 3                                                 ")
@@ -111,13 +102,18 @@ print("The eigenvalue and eigenvector of M of the third graph approximated with 
 "Eigenvector = ", g3_vector, "\n")
 print("The sum of elements of the eigenvector is = ", sum(g3_vector))
 
-print("RANK OF WEBSITES: \n")
+print("RANK OF NODES: \n")
 
-ranked_3 =len(g3_vector) - st.rankdata(g3_vector) + 1
-ranked_3 = [int(i) for i in ranked_3]
-for i in range(len(g3_vector)):
-    print("Rank ",i + 1," ---> ", ranked_3[i])
+ranks_3 =len(g3_vector) - st.rankdata(g3_vector) + 1 
+ranks_3 = [int(i) for i in ranks_3] 
 
+indexes = [i + 1 for i in range(len(ranks_3))] 
+
+dictRanks_3 = dict(zip(ranks_3,indexes)) 
+dictRanks_3 = dict(sorted(dictRanks_3.items())) 
+
+for rank, node in dictRanks_3.items():
+    print("Rank ", rank," ---> ", node)
 
 print("---------------------------------------------------------------------------------------------")
 print("                                     THE END                                                 ")
