@@ -83,9 +83,3 @@ for rank, node in dictRanks_3.items():
 print("---------------------------------------------------------------------------------------------")
 print("                                     THE END                                                 ")
 print("---------------------------------------------------------------------------------------------\n")
-
-print(list(dictRanks_1.values()))
-print(list(dictRanks_2.values()))
-print(list(dictRanks_3.values()))
-print(g1_vector)
-print(g2_vector)

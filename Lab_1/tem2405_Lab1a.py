@@ -38,6 +38,7 @@ print("d_k+1 / dk = ", dk_new / dk_old, "\n")
 print("------------------------------------------------------------")
 print("                       MATRIX T                             ")
 print("------------------------------------------------------------\n")
+
 # Creating matrix T
 n = np.random.randint(1,100) # choosing a random dimemnsion from 1 to 99 
 T = np.diag(2*np.ones(n)) + np.diag(-np.ones(n - 1), 1) + np.diag(-np.ones(n - 1), -1)
