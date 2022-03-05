@@ -1,7 +1,6 @@
 # Christos Panourgias
 # AM: 2405
 
-from curses import raw
 import numpy as np
 from numpy import linalg as la 
 import networkx as nx

@@ -1,6 +1,8 @@
 # Christos Panourgias
 # AM: 2405
 
+# This program contains tools that I will need for the exercises 
+
 import numpy as np 
 from numpy import linalg as la 
 from scipy import stats as st
