@@ -64,25 +64,26 @@ class tool():
     # lrate is the learning rate 
     # delta is the threshold for J and epsilon is the threshold for the 1-norm of theta(n+1)-theta(n)
     # returns theta, iterations and a list of J(theta) values throughout the GD algorithm
-    def GD(self,x, y, J, Jprime, h, theta, lrate=0.01, max_iter = 10000, epsilon=10**(-3), delta=10**(-3)):
+    def GD(self,x, y, J, Jprime, h, theta,\
+        lrate=0.01, max_iter = 10000, epsilon=10**(-3), delta=10**(-3)):
 
         Jtheta = [] # list that contains all outputs of J function for all inputs of theta
-        iter = 0
+        iter_ = 0
         theta_old = np.random.randint(1,10,len(theta))
-        while J(x, y, h, theta) > delta and la.norm(theta - theta_old, 1) > epsilon and iter <= max_iter:
+        while J(x, y, h, theta) > delta and la.norm(theta - theta_old, 1) > epsilon and iter_ <= max_iter:
 
             # Updating theta and keeping a copy of the old theta to compute the norm in the condition of the while loop
             theta_old = theta
             theta = theta - lrate * Jprime(x, y, h, theta)
             Jtheta.append(J(x, y, h, theta))
-            iter += 1
+            iter_ += 1
 
-            #print(J(x, y, h, theta), la.norm(theta-theta_old), iter) # this is for watching how J(theta) is being minimized and therefore determine the learning rate
+            #print(J(x, y, h, theta), la.norm(theta-theta_old), iter_) # this is for watching how J(theta) is being minimized and therefore determine the learning rate
             
-            if iter == max_iter:
+            if iter_ == max_iter:
                 print("-----------------------------------")
                 print("Gradient Decent does not converge.")
                 print("-----------------------------------")
                 break
 
-        return theta, iter, Jtheta
+        return theta, iter_, Jtheta
