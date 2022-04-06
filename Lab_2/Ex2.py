@@ -7,6 +7,7 @@ from mlTool import tool
 # reading files 
 train = open("Data/f_train.txt", "r")
 test = open("Data/f_test.txt", "r")
+small_train = open("Data/f_small.txt","r")
 
 # creating an object of my class
 tool = tool()
@@ -14,13 +15,12 @@ tool = tool()
 # extracting the data 
 x, y = tool.extractData_txt(train)
 x_test, y_test = tool.extractData_txt(test)
+x_small, y_small = tool.extractData_txt(small_train)
 
-
-def phi(x):
-    return np.array([1, x, x**2, x**3])
-
-# this is our x data transformed by phi (the phi(x) returns an array with 1 on the first column that is why we dont take it here)
-x_phi = [phi_x for phi_x in [phi(i[1]) for i in x] ] # a list that contains all data transformations in np.arrays
+# x is the feature list and k is the 1 + x + x^2 +...+ x^k array that it returns
+def phi(x, k):
+    phi_x = [x ** i for i in range(0, k)]
+    return np.array(phi_x)
 
 # h(x;theta ) is the same as in ex1
 def h(x, theta):
@@ -36,12 +36,15 @@ def Jprime(x, y, h,  theta):
     return 1.0/n * sum( [ (h(x[i], theta) - y[i]) * x[i] for i in range(len(x))])
 
 # we have a mulitvariate linear regression just as we had in ex1
-lrate = 0.4
-theta = np.ones(4)
-theta, iter, Jtheta = tool.GD(x_phi, y, J, Jprime, h, theta, lrate)
+# this is our x data transformed by phi (the phi(x) returns an array with 1 on the first column that is why we dont take it here)
+x_phi = [phi_x for phi_x in [phi(i[1], 4) for i in x] ] # a list that contains all data transformations in np.arrays
+
+lrate = 0.4 # best learning rate after expirementing
+theta = np.ones(4) # starting theta 
+theta, iter, Jtheta = tool.GD(x_phi, y, J, Jprime, h, theta, lrate) # results using my GD implementation
 
 # computing Etheta 
-x_phi_test = [phi_x for phi_x in [phi(i[1]) for i in x_test] ] # first computing the tranformation of x_test through phi
+x_phi_test = [phi_x for phi_x in [phi(i[1], 4) for i in x_test] ] # first computing the tranformation of x_test through phi
 Etheta = la.norm([h(x_phi_test[i], theta) - y_test[i] for i in range(len(x_phi_test))], 2)
 
 
@@ -70,8 +73,18 @@ print("-------------------------------------------------------------------------
 print("                                THE END                                        ")
 print("-------------------------------------------------------------------------------")
 
-xaxis = np.linspace(0,len(x), len(x)) # creating an x axis for the graph
-#xaxis_h = np.linspace(0,len(x_phi_test), len(x_phi_test))
-plt.scatter(xaxis, y_test)
-#plt.plot(xaxis_h, [h(x_phi_test[i]) for i in range(len(x_phi_test))])
+xaxis_test = np.linspace(0,len(y_test), len(y_test)) # creating a x axis for the graph
+plt.title("h(theta) and h(sk_theta) for test set.")
+plt.scatter(xaxis_test, y_test)
+plt.plot(xaxis_test, [h(x_phi_test[i], theta) for i in range(len(x_phi_test))], label="h(theta)", color="b")
+plt.plot(xaxis_test, [h(x_phi_test[i], sk_theta) for i in range(len(x_phi_test))], label="h(sk_theta)", color="r")
 plt.show()
+
+xaxis_train = np.linspace(0,len(y), len(y)) # creating a x axis for the graph
+plt.title("h(theta) and h(sk_theta) for train set.")
+plt.scatter(xaxis_train, y)
+plt.plot(xaxis_train, [h(x_phi[i], theta) for i in range(len(x_phi))], label="h(theta)", color="b")
+plt.plot(xaxis_train, [h(x_phi[i], sk_theta) for i in range(len(x_phi))], label="h(sk_theta)", color="r")
+plt.show()
+
+
