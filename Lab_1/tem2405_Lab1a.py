@@ -2,7 +2,7 @@
 # AM: 2405
 
 import numpy as np 
-from numpy import linalg as la, power, sort 
+from numpy import linalg as la, sort 
 from tool import Tool
 
 epsilon = 10**(-6) # error 
@@ -42,7 +42,8 @@ print("------------------------------------------------------------\n")
 # Creating matrix T
 n = np.random.randint(1,100) # choosing a random dimemnsion from 1 to 99 
 T = np.diag(2*np.ones(n)) + np.diag(-np.ones(n - 1), 1) + np.diag(-np.ones(n - 1), -1)
-lamda_T = tool.powerMethod(T, kmax, epsilon)[0]
+lamda_T,x = tool.powerMethod(T, kmax, epsilon)[0:2]
+
 print("Largest Eigen Value ( linalg ) λ = ",max(la.eig(T)[0]))
 print("Largest Eigen Value ( using the given formula -> max{ 2 - 2cos(kπ/(n+1)) | k = 1,...,n } ) λ = ",max([2 - 2*np.cos( (k * np.pi) / (len(T) + 1) ) for k in range(n)]))
 print("Largest Eigen Value approximation ( power method ) λ = ", lamda_T, "\n")
