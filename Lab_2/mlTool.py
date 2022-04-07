@@ -1,3 +1,4 @@
+from xml.dom.expatbuilder import theDOMImplementation
 import numpy as np 
 import numpy.linalg as la
 
@@ -87,3 +88,21 @@ class tool():
                 break
 
         return theta, iter_, Jtheta
+    
+    # we want to find where the Jp function is 0 using the newton method
+    def newton(self, x, y, theta, Jp, Jpp, epsilon=10**(-5), max_iter=10000):
+        
+        iter_ = 0
+        theta_old = np.random.randint(1,10,len(theta))
+        while la.norm(theta_old - theta, 1) > epsilon and iter_ <= max_iter:
+
+            theta_old = theta
+            theta = theta - Jp(x, y, theta) / Jpp(x, y, theta)
+            iter_ += 1
+
+            print(Jp(x, y, theta), theta, la.norm(theta_old, theta), iter_ ) # this helps on the implementation (to see how the results go throughout the Newton method)
+
+            if iter_ == max_iter:
+                print("Newtons method Does not converge.")
+
+        return theta

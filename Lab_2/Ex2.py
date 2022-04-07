@@ -29,11 +29,11 @@ def h(x, theta):
 # Cost function J(theta) (the same as in ex1)
 def J(x, y, h, theta):
     n = len(x)
-    return  1.0/(2*n) * sum( [ (h(x[i], theta) - y[i])**2 for i in range(len(x))])
+    return  1.0/(2*n) * sum( [ (h(x[i], theta) - y[i])**2 for i in range(n)])
 
 def Jprime(x, y, h,  theta):
     n = len(x)
-    return 1.0/n * sum( [ (h(x[i], theta) - y[i]) * x[i] for i in range(len(x))])
+    return 1.0/n * sum( [ (h(x[i], theta) - y[i]) * x[i] for i in range(n)])
 
 # we have a mulitvariate linear regression just as we had in ex1
 # this is our x data transformed by phi (the phi(x) returns an array with 1 on the first column that is why we dont take it here)

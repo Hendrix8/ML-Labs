@@ -24,12 +24,12 @@ def h(x, theta):
 # defining the cost function
 def J(x, y, h, theta):
     n = len(x)
-    return  1.0/(2*n) * sum( [ (h(x[i], theta) - y[i])**2 for i in range(len(x))])
+    return  1.0/(2*n) * sum( [ (h(x[i], theta) - y[i])**2 for i in range(n)])
 
 # defining the derivative of the cost function 
 def Jprime(x, y, h,  theta):
     n = len(x)
-    return 1.0/n * sum( [ (h(x[i], theta) - y[i]) * x[i] for i in range(len(x))])
+    return 1.0/n * sum( [ (h(x[i], theta) - y[i]) * x[i] for i in range(n)])
 
 
 # Linear Regression with sk_learn
