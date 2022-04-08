@@ -45,7 +45,7 @@ sk_theta = np.array(sk_theta) # making sk_theta a np.array again
 sk_Etheta = la.norm([h(x_test[i], sk_theta) - y_test[i] for i in range(len(x_test))], 2)
 
 # calculating theta using my model of Gradient Decent
-lrate = 0.09 # choosing lrate = 0.09 after experimenting with the convergence of GD
+lrate = 0.53 # choosing lrate = 0.53 after experimenting with the convergence of GD
 theta, iter, Jtheta = tool.GD(x, y, J, Jprime, h, theta, lrate)
 
 # Calculating the Epsilon theta error of my model
@@ -56,7 +56,7 @@ print("-------------------------------------------------------------------------
 print("                                RESULTS                                        ")
 print("-------------------------------------------------------------------------------")
 print("Theta = " + np.array2string(theta) + "\nSk-Learn Theta = " +str(sk_theta) + \
-      "\nLearning rate = 0.09 \nIterations = " + str(iter) + "\nEpsilon = " + str(10**(-3)) + \
+      "\nLearning rate = " + str(lrate) + "\nIterations = " + str(iter) + "\nEpsilon = " + str(10**(-3)) + \
       "\nDelta = " + str(10**(-3)) + "\nEpsilon Theta Error = " + str(Etheta) + \
       "\nSk-Learn Epsilon Theta Error = " + str(sk_Etheta))
 
@@ -70,4 +70,4 @@ plt.title("J(theta) progress throughout Gradient Decent Algorithm")
 plt.xlabel("Iterations")
 plt.ylabel("J(theta)")
 plt.plot(xaxis, Jtheta)
-plt.show()
+#plt.show()
