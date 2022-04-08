@@ -1,6 +1,7 @@
-from xml.dom.expatbuilder import theDOMImplementation
+from cProfile import label
 import numpy as np 
 import numpy.linalg as la
+import matplotlib.pyplot as plt
 
 # this class contains the tools that I will use to solve the exercises
 class tool():
@@ -8,7 +9,8 @@ class tool():
     def __init__(self):
         pass
     
-    def extractData_txt(self, file):
+    # extracts data with 1 at 0 position ready for linear regression
+    def LGextractData_txt(self, file):
         x = [] 
         y = []
         for line in file.readlines()[1::] : # ignoring the first line with the names of the features
@@ -58,6 +60,8 @@ class tool():
         # returning the data
         return x, y
 
+
+
     # implementing the gradient decent algorithm 
     # J is the cost function and Jprime is the derivative of the cost function
     # h is the hypothesis function and theta is the parameters
@@ -90,9 +94,10 @@ class tool():
         return theta, iter_, Jtheta
     
     # we want to find where the Jp function is 0 using the newton method
-    def newton(self, x, y, theta, Jp, Jpp, epsilon=10**(-5), max_iter=10000):
+    def newton(self, x, y, theta,J, Jp, Jpp, epsilon=10**(-4), max_iter=10000):
         
         iter_ = 0
+        Jtheta = []
         theta_old = np.random.randint(1,10,len(theta))
         while la.norm(theta_old - theta, 1) > epsilon and iter_ <= max_iter:
 
@@ -100,9 +105,43 @@ class tool():
             theta = theta - Jp(x, y, theta) / Jpp(x, y, theta)
             iter_ += 1
 
-            print(Jp(x, y, theta), theta, la.norm(theta_old, theta), iter_ ) # this helps on the implementation (to see how the results go throughout the Newton method)
-
+            print(Jp(x, y, theta), theta, J(x, y, theta), la.norm(theta_old - theta,1), iter_ ) # this helps on the implementation (to see how the results go throughout the Newton method)
+            Jtheta.append(J(x, y, theta))
             if iter_ == max_iter:
                 print("Newtons method Does not converge.")
+        
+        return theta, Jtheta
 
-        return theta
+
+    # creates a scatter plot for x1,x2 where x = [ (1,x1,x2)_1,....,(1,x1,x2)_n ] and y = [0, 1, 1, 0 ,1 ... , 1, 1]
+    def scatterClasses(self, x, y, title=None, xlabel=None, ylabel=None, boundary_line=False,yllim=0, yhlim=None, xllim=0, xhlim=None, xline=None, yline=None):
+
+        x_0 = [x[i][1::] for i in range(len(x)) if y[i] == 0 ] # taking only the samples from class 0 from the set_train extracting the 1 at position 0 
+        #y_0 = [i for i in y1 if i == 0.0] # taking the y = 0 from the set_train
+
+        x_0_X = [i[0] for i in x_0] # taking the x1 from the class 0 of the set_train set
+        x_0_Y = [i[1] for i in x_0] # taking the x2 from the class 0 of the set_train set 
+
+        x_1 = [x[i][1::] for i in range(len(x)) if y[i] == 1 ] # taking only the samples from class 1 from the set_train extracting the 1 at position 0 
+        #y1_1 = [i for i in y1 if i == 1.0] # taking the y = 0 from the set_train
+
+        x_1_X = [i[0] for i in x_1] # taking the x1 from the class 1 of the set_train set
+        x_1_Y = [i[1] for i in x_1] # taking the x2 from the class 1 of the set_train set 
+
+
+        plt.scatter(x_0_X, x_0_Y, label="0 class", marker="+")
+        plt.scatter(x_1_X, x_1_Y, label="1 class",marker="*")
+        if boundary_line == True:
+            plt.plot(xline, yline, label="Decision Line")
+
+        if title != None or xlabel != None or ylabel != None:
+            plt.title(title)
+            plt.xlabel(xlabel)
+            plt.ylabel(ylabel)
+        if yhlim != None:
+            plt.ylim(yllim, yhlim)
+        if xhlim != None:
+            plt.xlim(xllim, xhlim)
+
+        plt.legend()
+        plt.show()

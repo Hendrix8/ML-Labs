@@ -14,8 +14,8 @@ tool = tool()
 theta = np.ones(5)
 
 # extracting the data using the function created in the mlTool.tool class
-x, y = tool.extractData_txt(train) 
-x_test, y_test = tool.extractData_txt(test)
+x, y = tool.LGextractData_txt(train) 
+x_test, y_test = tool.LGextractData_txt(test)
 
 # defining the hypothesis function for the linear model 
 def h(x, theta):
@@ -47,7 +47,6 @@ sk_Etheta = la.norm([h(x_test[i], sk_theta) - y_test[i] for i in range(len(x_tes
 # calculating theta using my model of Gradient Decent
 lrate = 0.09 # choosing lrate = 0.09 after experimenting with the convergence of GD
 theta, iter, Jtheta = tool.GD(x, y, J, Jprime, h, theta, lrate)
-#theta = np.array([  0.98151807, -0.21509956, -0.55496561, -0.03537969, -0.06947682])
 
 # Calculating the Epsilon theta error of my model
 Etheta = la.norm([h(x_test[i], theta) - y_test[i] for i in range(len(x_test))], 2)

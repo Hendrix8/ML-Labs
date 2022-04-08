@@ -13,9 +13,9 @@ small_train = open("Data/f_small.txt","r")
 tool = tool()
 
 # extracting the data 
-x, y = tool.extractData_txt(train)
-x_test, y_test = tool.extractData_txt(test)
-x_small, y_small = tool.extractData_txt(small_train)
+x, y = tool.LGextractData_txt(train)
+x_test, y_test = tool.LGextractData_txt(test)
+x_small, y_small = tool.LGextractData_txt(small_train)
 
 # x is the feature list and k is the 1 + x + x^2 +...+ x^k array that it returns
 def phi(x, k):
@@ -177,6 +177,7 @@ LGsmall_sk(x_small, y_small, 5)
 LGsmall_sk(x_small, y_small, 10)
 
 # for k = 20 best l-rate = (smallest J(theta))
+
 LGsmall_sk(x_small, y_small, 20)
 
 plt.legend(loc="upper left")
