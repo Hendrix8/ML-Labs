@@ -19,7 +19,7 @@ x_small, y_small = tool.LGextractData_txt(small_train)
 
 # x is the feature list and k is the 1 + x + x^2 +...+ x^k array that it returns
 def phi(x, k):
-    phi_x = [x ** i for i in range(0, k)]
+    phi_x = [x ** i for i in range(0, k )]
     return np.array(phi_x)
 
 # h(x;theta ) is the same as in ex1
@@ -182,3 +182,4 @@ LGsmall_sk(x_small, y_small, 20)
 
 plt.legend(loc="upper left")
 plt.show()
+

@@ -9,8 +9,10 @@ train = open("Data/car_train.txt", "r")
 test = open("Data/car_test.txt", "r")
 
 
-# initializing variables
+# instance of class tool
 tool = tool()
+
+# initializing theta to be an array with ones
 theta = np.ones(5)
 
 # extracting the data using the function created in the mlTool.tool class
@@ -70,4 +72,4 @@ plt.title("J(theta) progress throughout Gradient Decent Algorithm")
 plt.xlabel("Iterations")
 plt.ylabel("J(theta)")
 plt.plot(xaxis, Jtheta)
-#plt.show()
+plt.show()

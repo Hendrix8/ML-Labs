@@ -47,8 +47,8 @@ class tool():
                 x[i][counter] = (x[i][counter] - meansOfx[counter]) / stdOfx[counter]
             counter += 1
         
-
-        y = [i/max(y) for i in y]
+        maxy = max([abs(i) for i in y])
+        y = [i/maxy for i in y]
 
         # transforming x,y into list of np.arrays
         x = [np.array(i) for i in x]
