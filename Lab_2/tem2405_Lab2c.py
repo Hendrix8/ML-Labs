@@ -50,10 +50,13 @@ def Jpp(x, y, theta):
 
 
 # p(y|x) = 0.5 <=> 1/(1 + e^(theta.T * x)) = 0.5 <=> 2 = 1 + e^(theta.T * x) <=> 0 = theta.T * x <=>
-# x0 + theta1 * x1 + theta2 * x2 = 0 <=> 
+# x0 + theta1 * x1 + theta2 * x2 = 0 <=> 1 + theta1 * x1 + theta2 * x2 = 0 <=> 
+# 1/theta2 + (theta1/theta2) * x1 + x2 = 0 <=> x2 = -(theta1/theta2) * x1 - 1/theta2 <=> 
+# f(x1) = -(theta1/theta2) * x1 - 1/theta2
 # this function returns the y values for the boundary line 
-def decision_line(decision_point):
-    pass
+# theta is 3 dimensional but we want only the theta1 and theta2 which correspond to the x1, x2 values and not x0
+def boundaryline(x1, theta):
+    return -(theta[1] / theta[2]) * x1 - 1 / theta[2]
 
 # initializing theta to be 0 vector and decision point to be 0.5
 theta_1 = np.zeros(len(x1[0]))
@@ -63,27 +66,25 @@ decision_point = 0.5
 # using newton to estimate theta
 #theta_1, Jtheta_1 = tool.newton(x1, y1, theta_1, J, Jp, Jpp)
 #theta_2, Jtheta_2 = tool.newton(x2, y2, theta_2, J, Jp, Jpp)
-#print(theta_1)
-#print(Jtheta_1)
-#print(theta_2)
-#print(Jtheta_2)
 
-theta_1 = np.array([-0.69624563, -1.11116892, -3.31398542]) # for this theta J'(theta) = [-0.00161076 -0.01000832 -0.00115679]
-log_reg = LogisticRegression()
+theta_1 = np.array([-0.54794508, 3.93389256, 6.30686117])
+theta_2 = np.array([2.43602175e-04, 2.58670355e+00, 2.12737044e+00]) # after 3175 iterations of newton
+log_reg_1 = LogisticRegression()
+log_reg_2 = LogisticRegression()
 
 # removing the 1 from 0 position (sk learn does not need it)
 sk_x1 = [i[1::] for i in x1]
-log_reg.fit(sk_x1, y1)
+log_reg_1.fit(sk_x1, y1)
 
-sk_theta_1 = log_reg.coef_[0].tolist() # turning sk_theta to list so that I can add the constant term
-sk_theta_1.insert(0,log_reg.intercept_[0]) # adding the constant term
+sk_theta_1 = log_reg_1.coef_[0].tolist() # turning sk_theta to list so that I can add the constant term
+sk_theta_1.insert(0,log_reg_1.intercept_[0]) # adding the constant term
 sk_theta_1 = np.array(sk_theta_1) # making sk_theta a np.array again
 
 sk_x2 = [i[1::] for i in x2]
-log_reg.fit(sk_x2, y2)
+log_reg_2.fit(sk_x2, y2)
 
-sk_theta_2 = log_reg.coef_[0].tolist() # turning sk_theta to list so that I can add the constant term
-sk_theta_2.insert(0,log_reg.intercept_[0]) # adding the constant term
+sk_theta_2 = log_reg_2.coef_[0].tolist() # turning sk_theta to list so that I can add the constant term
+sk_theta_2.insert(0,log_reg_2.intercept_[0]) # adding the constant term
 sk_theta_2 = np.array(sk_theta_2) # making sk_theta a np.array again
 
 print("------------------------------------------------------------------------------------------------------")
@@ -94,15 +95,31 @@ for i in range(len(x1_test)):
     print("Probability for (x1, x2) = (", x1_test[i][1],",",x1_test[i][2], ") is : ",\
         round(h(x1_test[i], theta_1), 4))
 
-y1_pred = [0 if i < decision_point else 1 for i in [h(x1_test[i], theta_1) for i in range(len(x1_test))]]
-
 print("------------------------------------------------------------------------------------------------------")
-print("                                 CONFUSION MATRIX FOR Y1_PRED                                      ")
+print("                         PROBABILITY SK-LEARN PREDICTIONS FOR TEST SET 1                              ")
 print("------------------------------------------------------------------------------------------------------")
 
+for i in range(len(x1_test)):
+    print("Probability for (x1, x2) = (", x1_test[i][1],",",x1_test[i][2], ") is : ",\
+        round(h(x1_test[i], sk_theta_1), 4))
 
+print("------------------------------------------------------------------------------------------------------")
+print("                            PROBABILITY PREDICTIONS FOR TEST SET 2                                    ")
+print("------------------------------------------------------------------------------------------------------")
 
+for i in range(len(x2_test)):
+    print("Probability for (x1, x2) = (", x2_test[i][1],",",x2_test[i][2], ") is : ",\
+        round(h(x2_test[i], theta_2), 4))
 
+print("------------------------------------------------------------------------------------------------------")
+print("                       PROBABILITY SK-LEARN PREDICTIONS FOR TEST SET 2                                ")
+print("------------------------------------------------------------------------------------------------------")
+
+for i in range(len(x2_test)):
+    print("Probability for (x1, x2) = (", x2_test[i][1],",",x2_test[i][2], ") is : ",\
+        round(h(x2_test[i], sk_theta_2), 4))
+
+#Confusion Matrices
 #     -----------------
 #    |   TP   |   FP   |    This is the confusion matrix which gives evaluation on our model, where
 #     -----------------          TP = True-Positive, FP = False-Positive
@@ -110,8 +127,16 @@ print("-------------------------------------------------------------------------
 #     -----------------           
 
 
+print("======================================================================================================")
+print("                                       CONFUSION MATRICES                                             ")
+print("======================================================================================================")
 
 
+print("------------------------------------------------------------------------------------------------------")
+print("                                 CONFUSION MATRIX FOR Y1_PRED                                      ")
+print("------------------------------------------------------------------------------------------------------")
+
+y1_pred = [0 if i < decision_point else 1 for i in [h(x1_test[i], theta_1) for i in range(len(x1_test))]]
 CM1 = confusion_matrix(y1_test, y1_pred) 
 
 print("                                   ------------------------")
@@ -126,20 +151,11 @@ print("                                           THE END                       
 print("------------------------------------------------------------------------------------------------------")
 
 print("------------------------------------------------------------------------------------------------------")
-print("                         PROBABILITY SK-LEARN PREDICTIONS FOR TEST SET 1                              ")
-print("------------------------------------------------------------------------------------------------------")
-
-for i in range(len(x1_test)):
-    print("Probability for (x1, x2) = (", x1_test[i][1],",",x1_test[i][2], ") is : ",\
-        round(h(x1_test[i], sk_theta_1), 4))
-
-sk_x1_test = [i[1::] for i in x1_test] # removing 1 from position 0 
-y1_sk_pred = log_reg.predict(sk_x1_test)
-
-print("------------------------------------------------------------------------------------------------------")
 print("                                 CONFUSION MATRIX FOR Y1_SK_PRED                                      ")
 print("------------------------------------------------------------------------------------------------------")
 
+sk_x1_test = [i[1::] for i in x1_test] # removing 1 from position 0 
+y1_sk_pred = log_reg_1.predict(sk_x1_test)
 CM_sk1 = confusion_matrix(y1_test, y1_sk_pred)
 
 print("                                   ------------------------")
@@ -156,20 +172,10 @@ print("-------------------------------------------------------------------------
 
 
 print("------------------------------------------------------------------------------------------------------")
-print("                            PROBABILITY PREDICTIONS FOR TEST SET 2                                    ")
-print("------------------------------------------------------------------------------------------------------")
-
-for i in range(len(x2_test)):
-    print("Probability for (x1, x2) = (", x2_test[i][1],",",x2_test[i][2], ") is : ",\
-        round(h(x2_test[i], theta_2), 4))
-
-
-y2_pred = [0 if i < decision_point else 1 for i in [h(x2_test[i], theta_2) for i in range(len(x2_test))]]
-
-print("------------------------------------------------------------------------------------------------------")
 print("                                 CONFUSION MATRIX FOR Y2_PRED                                      ")
 print("------------------------------------------------------------------------------------------------------")
 
+y2_pred = [0 if i < decision_point else 1 for i in [h(x2_test[i], theta_2) for i in range(len(x2_test))]]
 CM2 = confusion_matrix(y2_test, y2_pred)
 
 print("                                   ------------------------")
@@ -185,20 +191,11 @@ print("                                           THE END                       
 print("------------------------------------------------------------------------------------------------------")
 
 print("------------------------------------------------------------------------------------------------------")
-print("                       PROBABILITY SK-LEARN PREDICTIONS FOR TEST SET 2                                ")
-print("------------------------------------------------------------------------------------------------------")
-
-for i in range(len(x2_test)):
-    print("Probability for (x1, x2) = (", x2_test[i][1],",",x2_test[i][2], ") is : ",\
-        round(h(x2_test[i], sk_theta_2), 4))
-
-sk_x2_test = [i[1::] for i in x2_test] # removing 1 from position 0 
-y2_sk_pred = log_reg.predict(sk_x2_test)
-
-print("------------------------------------------------------------------------------------------------------")
 print("                                 CONFUSION MATRIX FOR Y2_SK_PRED                                      ")
 print("------------------------------------------------------------------------------------------------------")
 
+sk_x2_test = [i[1::] for i in x2_test] # removing 1 from position 0 
+y2_sk_pred = log_reg_2.predict(sk_x2_test)
 CM_sk2 = confusion_matrix(y2_test, y2_sk_pred)
 
 print("                                   ------------------------")
@@ -211,26 +208,30 @@ print("-------------------------------------------------------------------------
 print("                                           THE END                                                    ")
 print("------------------------------------------------------------------------------------------------------")
 
+
 # the x-axis for the boundary lines 
-xaxis1 = np.linspace(-4,3,100)
-xaxis2 = np.linspace(-4,3.5,1000)
+xaxis_train1 = np.linspace(-4,3,len(x1))
+xaxis_test1 = np.linspace(-4,3.5,len(x1_test))
 
-#borderline1 = [(i, j) for i in xaxis1 for j in xaxis1 if h(np.array([0.1, i, j]), theta_1) in range(10)]
-#print(borderline1)
-#borderline2 = [(i, j) for ]
-# we have to define with all x = (x1, x2) s.t. h(x ; theta) = 0.5
-#borderline1_train = [(i, j) for i, j in zip()]
-
+xaxis_train2 = np.linspace(-4,3,len(x2))
+xaxis_test2 = np.linspace(-4,3.5,len(x2_test))
 
 # the y-axis for the boundary lines
+yaxis_train1 = [boundaryline(x[1], theta_1) for x in x1]
+yaxis_test1 = [boundaryline(x[1], theta_1) for x in x1_test]
 
-
+yaxis_train2 = [boundaryline(x[1], theta_2) for x in x2]
+yaxis_test2 = [boundaryline(x[1], theta_2) for x in x2_test]
+ 
 # ploting the scatter plots
-#tool.scatterClasses(x1, y1, yllim=-2.5, yhlim=17, xllim=-4, xhlim=3.5,title="x = (x1,x2) for the train_set1", \
- #                   xlabel="x1", ylabel="x2")
-#tool.scatterClasses(x1_test, y1_test, yllim=-2.5, yhlim=17, xllim=-4, xhlim=3.5, title="x = (x1,x2) for the test_set1", \
- #                   xlabel="x1", ylabel="x2")
-#tool.scatterClasses(x2, y2, yllim=-3.5, yhlim=2.8, xllim=-4, xhlim=3.5, title="x = (x1,x2) for the train_set2", \
- #                   xlabel="x1", ylabel="x2")
-#tool.scatterClasses(x2_test, y2_test, yllim=-3.5, yhlim=2.8, xllim=-4, xhlim=3.5, title="x = (x1,x2) for the test_set2", \
- #                   xlabel="x1", ylabel="x2")
+tool.scatterClasses(x1, y1, yllim=-2.5, yhlim=17, xllim=-4, xhlim=3.5,title="x = (x1,x2) for the train_set1", \
+                    xlabel="x1", ylabel="x2", boundary_line=True, xline=xaxis_train1, yline=yaxis_train1)
+
+tool.scatterClasses(x1_test, y1_test, yllim=-2.5, yhlim=17, xllim=-4, xhlim=3.5, title="x = (x1,x2) for the test_set1", \
+                    xlabel="x1", ylabel="x2", boundary_line=True, xline=xaxis_test1, yline=yaxis_test1)
+
+tool.scatterClasses(x2, y2, yllim=-3.5, yhlim=2.8, xllim=-4, xhlim=3.5, title="x = (x1,x2) for the train_set2", \
+                    xlabel="x1", ylabel="x2", boundary_line=True, xline=xaxis_train2, yline=yaxis_train2)
+
+tool.scatterClasses(x2_test, y2_test, yllim=-3.5, yhlim=2.8, xllim=-4, xhlim=3.5, title="x = (x1,x2) for the test_set2", \
+                    xlabel="x1", ylabel="x2",boundary_line=True, xline=xaxis_test2, yline=yaxis_test2)

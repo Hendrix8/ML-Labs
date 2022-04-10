@@ -19,7 +19,7 @@ x_small, y_small = tool.LGextractData_txt(small_train)
 
 # x is the feature list and k is the 1 + x + x^2 +...+ x^k array that it returns
 def phi(x, k):
-    phi_x = [x ** i for i in range(0, k )]
+    phi_x = [x ** i for i in range(0, k)]
     return np.array(phi_x)
 
 # h(x;theta ) is the same as in ex1
@@ -31,7 +31,7 @@ def J(x, y, h, theta):
     n = len(x)
     return  1.0/(2*n) * sum( [ (h(x[i], theta) - y[i])**2 for i in range(n)])
 
-def Jprime(x, y, h,  theta):
+def Jprime(x, y, h, theta):
     n = len(x)
     return 1.0/n * sum( [ (h(x[i], theta) - y[i]) * x[i] for i in range(n)])
 
@@ -94,7 +94,8 @@ plt.legend()
 plt.show()
 
 def LGsmall(x_small, y_small, k, lrate, max_iter=10000):
-    x_small_phi = [phi_x_small for phi_x_small in [phi(x[1], k) for x in x_small]]
+
+    x_small_phi = [phi_x_small for phi_x_small in [phi(x[1], k) for x in x_small] ]
     theta_sm = np.ones(k) # starting theta 
     theta_sm, iter_sm, Jtheta_sm = tool.GD(x_small_phi, y_small, J, Jprime, h, theta_sm, lrate, max_iter=max_iter) # results using my GD implementation
     Etheta_sm = la.norm([h(x_small_phi[i], theta_sm) - y_small[i] for i in range(len(x_small_phi))], 2)
@@ -110,7 +111,7 @@ def LGsmall(x_small, y_small, k, lrate, max_iter=10000):
     print("                                THE END                                        ")
     print("-------------------------------------------------------------------------------")
 
-    xaxis_small = np.linspace(0,len(y_small), len(y_small)) # creating a x axis for the graph
+    xaxis_small = np.linspace(0,max(y_small), len(y_small)) # creating a x axis for the graph
     plt.title("h(x;theta) for different k.")
     plt.xlabel("x")
     plt.ylabel("h(x;theta)")
@@ -143,7 +144,7 @@ def LGsmall_sk(x_small, y_small, k, max_iter=10000):
     print("                                THE END                                        ")
     print("-------------------------------------------------------------------------------")
 
-    xaxis_small = np.linspace(0,len(y_small), len(y_small)) # creating a x axis for the graph
+    xaxis_small = np.linspace(0, max(y_small), len(y_small)) # creating a x axis for the graph
     plt.title("h(x;sk_theta) for different k.")
     plt.xlabel("x")
     plt.ylabel("h(x;sk_theta)")

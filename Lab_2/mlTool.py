@@ -1,4 +1,5 @@
 from cProfile import label
+from turtle import color
 import numpy as np 
 import numpy.linalg as la
 import matplotlib.pyplot as plt
@@ -102,7 +103,7 @@ class tool():
         while la.norm(theta_old - theta, 1) > epsilon and iter_ <= max_iter:
 
             theta_old = theta
-            theta = theta - Jp(x, y, theta) / Jpp(x, y, theta)
+            theta = theta + Jp(x, y, theta) / Jpp(x, y, theta) # it is plus because you want to maximize
             iter_ += 1
 
             print(Jp(x, y, theta), theta, J(x, y, theta), la.norm(theta_old - theta,1), iter_ ) # this helps on the implementation (to see how the results go throughout the Newton method)
@@ -132,7 +133,7 @@ class tool():
         plt.scatter(x_0_X, x_0_Y, label="0 class", marker="+")
         plt.scatter(x_1_X, x_1_Y, label="1 class",marker="*")
         if boundary_line == True:
-            plt.plot(xline, yline, label="Decision Line")
+            plt.plot(xline, yline, label="Decision Line", color="r", linewidth=0.7)
 
         if title != None or xlabel != None or ylabel != None:
             plt.title(title)
