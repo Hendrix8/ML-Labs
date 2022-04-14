@@ -16,7 +16,7 @@ class tool():
         y = []
         for line in file.readlines()[1::] : # ignoring the first line with the names of the features
 
-            # creating an with all the floats of each feature and adding them to x
+            # creating list with all the floats of each feature and adding them to x
             x.append([float(i) for i in line.split()][0:-1])
             y.append([float(i) for i in line.split()][-1]) # this is a list of numbers
 
@@ -48,20 +48,39 @@ class tool():
                 x[i][counter] = (x[i][counter] - meansOfx[counter]) / stdOfx[counter]
             counter += 1
         
-        maxy = max([abs(i) for i in y])
-        y = [i/maxy for i in y]
-
         # transforming x,y into list of np.arrays
         x = [np.array(i) for i in x]
         y = [np.array(i) for i in y]
 
+        # normalixing y
+
+        meanOfy = np.mean(y)
+        stdOfy = np.std(y)
+        #y = [ np.subtract(i, meanOfy) / stdOfy for i in y]
+
+        maxy = max([abs(i) for i in y])
+        y = [np.array(i) / maxy for i in y]
+
         # closing the file
         file.close()
 
-        # returning the data
+        # returning the data (returning mean and std for denormalization)
+        return x, y, meanOfy, stdOfy
+
+
+    def extractData(self, file):
+        x = [] 
+        y = []
+        for line in file.readlines()[1::] : # ignoring the first line with the names of the features
+
+            # creating list with all the floats of each feature and adding them to x
+            x.append([float(i) for i in line.split()][0:-1])
+            y.append([float(i) for i in line.split()][-1]) # this is a list of numbers
+
+        # inserting 1 in the first element of the features
+        for l in x:
+            l.insert(0, 1.0)
         return x, y
-
-
 
     # implementing the gradient decent algorithm 
     # J is the cost function and Jprime is the derivative of the cost function
@@ -95,7 +114,7 @@ class tool():
         return theta, iter_, Jtheta
     
     # we want to find where the Jp function is 0 using the newton method
-    def newton(self, x, y, theta,J, Jp, Jpp, epsilon=10**(-4), max_iter=10000):
+    def newton(self, x, y, theta, J, Jp, Jpp, epsilon=10**(-4), max_iter=10000):
         
         iter_ = 0
         Jtheta = []
@@ -106,12 +125,13 @@ class tool():
             theta = theta + Jp(x, y, theta) / Jpp(x, y, theta) # it is plus because you want to maximize
             iter_ += 1
 
-            print(Jp(x, y, theta), theta, J(x, y, theta), la.norm(theta_old - theta,1), iter_ ) # this helps on the implementation (to see how the results go throughout the Newton method)
+            print(theta, la.norm(theta_old - theta,1), iter_ ) # this helps on the implementation (to see how the results go throughout the Newton method)
             Jtheta.append(J(x, y, theta))
             if iter_ == max_iter:
                 print("Newtons method Does not converge.")
         
         return theta, Jtheta
+
 
 
     # creates a scatter plot for x1,x2 where x = [ (1,x1,x2)_1,....,(1,x1,x2)_n ] and y = [0, 1, 1, 0 ,1 ... , 1, 1]

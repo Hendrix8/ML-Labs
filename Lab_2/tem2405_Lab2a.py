@@ -8,7 +8,6 @@ from mlTool import tool
 train = open("Data/car_train.txt", "r")
 test = open("Data/car_test.txt", "r")
 
-
 # instance of class tool
 tool = tool()
 
@@ -16,8 +15,8 @@ tool = tool()
 theta = np.ones(5)
 
 # extracting the data using the function created in the mlTool.tool class
-x, y = tool.LGextractData_txt(train) 
-x_test, y_test = tool.LGextractData_txt(test)
+x, y, meanOfy, stdOfy = tool.LGextractData_txt(train) 
+x_test, y_test, meanOfy_test, stdOfy_test  = tool.LGextractData_txt(test)
 
 # defining the hypothesis function for the linear model 
 def h(x, theta):
@@ -43,15 +42,22 @@ sk_theta = reg.coef_.tolist() # turning sk_theta to list so that I can add the c
 sk_theta.insert(0,reg.intercept_) # adding the constant term
 sk_theta = np.array(sk_theta) # making sk_theta a np.array again
 
+
 # calculating Etheta that is produced by the sk_learn linear regression algorithm
-sk_Etheta = la.norm([h(x_test[i], sk_theta) - y_test[i] for i in range(len(x_test))], 2)
+sk_x_test = [i[1::] for i in x_test] # deleting the first feature which is 1 (sk_learn does not need it)
+
+y_test = np.array([ (i * stdOfy_test) + meanOfy_test for i in y_test]) # denormalizing y_test 
+y_pred_sk = reg.predict(sk_x_test) * stdOfy_test + meanOfy_test # taking the prediction and denormalizing 
+
+sk_Etheta = la.norm(np.array([y_pred_sk[i] - y_test[i] for i in range(len(y_pred_sk))]), 2)
 
 # calculating theta using my model of Gradient Decent
 lrate = 0.53 # choosing lrate = 0.53 after experimenting with the convergence of GD
 theta, iter, Jtheta = tool.GD(x, y, J, Jprime, h, theta, lrate)
 
 # Calculating the Epsilon theta error of my model
-Etheta = la.norm([h(x_test[i], theta) - y_test[i] for i in range(len(x_test))], 2)
+y_pred = [h(x_test[i], theta) * stdOfy_test + meanOfy_test  for i in range(len(x_test))] # denormalizing the predictions
+Etheta = la.norm([y_pred[i] - y_test[i] for i in range(len(x_test))], 2) # renormalizing Etheta to get a more accurate error
 
 # PROBLEM (a) : Printing the important values 
 print("-------------------------------------------------------------------------------")
@@ -73,3 +79,7 @@ plt.xlabel("Iterations")
 plt.ylabel("J(theta)")
 plt.plot(xaxis, Jtheta)
 plt.show()
+
+# numerical representation of losses of our predictions in the test set
+#for i in range(len(y_pred)):
+#    print(y_pred[i] - y_test[i])

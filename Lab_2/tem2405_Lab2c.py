@@ -15,10 +15,10 @@ set2_test = open("Data/set2_test.txt","r")
 tool = tool()
 
 # extracting the normalized data 
-x1, y1 = tool.LGextractData_txt(set1_train)
-x2, y2 = tool.LGextractData_txt(set2_train)
-x1_test, y1_test = tool.LGextractData_txt(set1_test)
-x2_test, y2_test = tool.LGextractData_txt(set2_test)
+x1, y1, mean_y1, std_y1 = tool.LGextractData_txt(set1_train)
+x2, y2, mean_y2, std_y2 = tool.LGextractData_txt(set2_train)
+x1_test, y1_test, mean_y1_test, std_y1_test = tool.LGextractData_txt(set1_test)
+x2_test, y2_test, mean_y2_test, std_y2_test = tool.LGextractData_txt(set2_test)
 
 # creating the hypothesis function for logistic regression 
 def h(x, theta):
@@ -55,8 +55,8 @@ def Jpp(x, y, theta):
 # f(x1) = -(theta1/theta2) * x1 - 1/theta2
 # this function returns the y values for the boundary line 
 # theta is 3 dimensional but we want only the theta1 and theta2 which correspond to the x1, x2 values and not x0
-def boundaryline(x1, theta):
-    return -(theta[1] / theta[2]) * x1 - 1 / theta[2]
+def boundaryline(x, theta):
+    return -(theta[1] / theta[2]) * x - 1 / theta[2]
 
 # initializing theta to be 0 vector and decision point to be 0.5
 theta_1 = np.zeros(len(x1[0]))
@@ -64,11 +64,12 @@ theta_2 = np.zeros(len(x2[0]))
 decision_point = 0.5
 
 # using newton to estimate theta
-#theta_1, Jtheta_1 = tool.newton(x1, y1, theta_1, J, Jp, Jpp)
-#theta_2, Jtheta_2 = tool.newton(x2, y2, theta_2, J, Jp, Jpp)
+theta_1, Jtheta_1 = tool.newton(x1, y1, theta_1, J, Jp, Jpp)
+theta_2, Jtheta_2 = tool.newton(x2, y2, theta_2, J, Jp, Jpp)
 
-theta_1 = np.array([-0.54794508, 3.93389256, 6.30686117])
-theta_2 = np.array([2.43602175e-04, 2.58670355e+00, 2.12737044e+00]) # after 3175 iterations of newton
+#theta_1 = np.array([-0.58932712, 4.13158806, 6.64340868]) # after 7731 iterations with ||theta_old - theta || = 10**(-4)  
+#theta_2 = np.array([2.43602175e-04, 2.58670355e+00, 2.12737044e+00]) # after 3175 iterations of newton with || theta_old - theta || = 10 ** (-4)
+
 log_reg_1 = LogisticRegression()
 log_reg_2 = LogisticRegression()
 
@@ -217,11 +218,11 @@ xaxis_train2 = np.linspace(-4,3,len(x2))
 xaxis_test2 = np.linspace(-4,3.5,len(x2_test))
 
 # the y-axis for the boundary lines
-yaxis_train1 = [boundaryline(x[1], theta_1) for x in x1]
-yaxis_test1 = [boundaryline(x[1], theta_1) for x in x1_test]
+yaxis_train1 = [boundaryline(x, theta_1) for x in xaxis_train1]
+yaxis_test1 = [boundaryline(x, theta_1) for x in xaxis_test1]
 
-yaxis_train2 = [boundaryline(x[1], theta_2) for x in x2]
-yaxis_test2 = [boundaryline(x[1], theta_2) for x in x2_test]
+yaxis_train2 = [boundaryline(x, theta_2) for x in xaxis_train2]
+yaxis_test2 = [boundaryline(x, theta_2) for x in xaxis_test2]
  
 # ploting the scatter plots
 tool.scatterClasses(x1, y1, yllim=-2.5, yhlim=17, xllim=-4, xhlim=3.5,title="x = (x1,x2) for the train_set1", \
