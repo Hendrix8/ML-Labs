@@ -1,3 +1,5 @@
+# Christos Panourgias 2405
+
 import numpy as np 
 import numpy.linalg as la
 import matplotlib.pyplot as plt
@@ -81,5 +83,5 @@ plt.plot(xaxis, Jtheta)
 plt.show()
 
 # numerical representation of losses of our predictions in the test set
-#for i in range(len(y_pred)):
-#    print(y_pred[i] - y_test[i])
+for i in range(len(y_pred)):
+    print(y_pred[i] - y_test[i])

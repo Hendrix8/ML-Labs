@@ -1,3 +1,5 @@
+# Christos Panourgias 2405
+
 import numpy as np 
 import numpy.linalg as la
 import matplotlib.pyplot as plt
@@ -64,11 +66,11 @@ theta_2 = np.zeros(len(x2[0]))
 decision_point = 0.5
 
 # using newton to estimate theta
-theta_1, Jtheta_1 = tool.newton(x1, y1, theta_1, J, Jp, Jpp)
-theta_2, Jtheta_2 = tool.newton(x2, y2, theta_2, J, Jp, Jpp)
+#theta_1, Jtheta_1 = tool.newton(x1, y1, theta_1, J, Jp, Jpp)
+#theta_2, Jtheta_2 = tool.newton(x2, y2, theta_2, J, Jp, Jpp)
 
-#theta_1 = np.array([-0.58932712, 4.13158806, 6.64340868]) # after 7731 iterations with ||theta_old - theta || = 10**(-4)  
-#theta_2 = np.array([2.43602175e-04, 2.58670355e+00, 2.12737044e+00]) # after 3175 iterations of newton with || theta_old - theta || = 10 ** (-4)
+theta_1 = np.array([-0.58932712, 4.13158806, 6.64340868]) # after 7731 iterations with ||theta_old - theta || = 10**(-4)  
+theta_2 = np.array([2.43602175e-04, 2.58670355e+00, 2.12737044e+00]) # after 3175 iterations of newton with || theta_old - theta || = 10 ** (-4)
 
 log_reg_1 = LogisticRegression()
 log_reg_2 = LogisticRegression()
